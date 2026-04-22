@@ -4,15 +4,14 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import java.time.LocalDateTime;
 
 @Data
-@TableName("admin")
-public class Admin {
+@TableName("landlord_account")
+public class LandlordAccount {
     @TableId(type = IdType.AUTO)
-    private Integer adminId;
-    private String adminName;
-    private String adminPassword;
-    private String adminAvatar;
-    private Integer adminStatus;
+    private Integer accountId;
+    private Integer landlordId;
+    private String bankName;
+    private String bankCardNo;
+    private Integer accountStatus;
 }

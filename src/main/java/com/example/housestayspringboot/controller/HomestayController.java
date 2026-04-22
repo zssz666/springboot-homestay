@@ -24,11 +24,11 @@ public class HomestayController {
     @PostMapping("/create")
     public Result<Homestay> create(@RequestBody Homestay homestay, @RequestHeader("Authorization") String authHeader) {
         String token = authHeader.substring(7);
-        Long userId = jwtUtils.getUserId(token);
-        
-        Landlord landlord = landlordService.findByUserId(userId);
+        Integer userId = jwtUtils.getUserId(token);
+
+        Landlord landlord = landlordService.findById(userId);
         if (landlord == null || landlord.getAuditStatus() != 1) {
-            return Result.error("请先完成房东认证");
+            return Result.<Homestay>error(400, "请先完成房东认证");
         }
         homestay.setLandlordId(landlord.getLandlordId());
         Homestay created = homestayService.create(homestay);
@@ -42,13 +42,13 @@ public class HomestayController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public Result<Void> delete(@PathVariable Long id) {
+    public Result<Void> delete(@PathVariable Integer id) {
         homestayService.delete(id);
-        return Result.success("删除成功", null);
+        return Result.<Void>success("删除成功", null);
     }
 
     @GetMapping("/detail/{id}")
-    public Result<Homestay> detail(@PathVariable Long id) {
+    public Result<Homestay> detail(@PathVariable Integer id) {
         Homestay homestay = homestayService.findById(id);
         return Result.success(homestay);
     }
@@ -63,40 +63,40 @@ public class HomestayController {
     @GetMapping("/my-list")
     public Result<List<Homestay>> myList(@RequestHeader("Authorization") String authHeader) {
         String token = authHeader.substring(7);
-        Long userId = jwtUtils.getUserId(token);
-        
-        Landlord landlord = landlordService.findByUserId(userId);
+        Integer userId = jwtUtils.getUserId(token);
+
+        Landlord landlord = landlordService.findById(userId);
         if (landlord == null) {
-            return Result.success("暂无房源", null);
+            return Result.<List<Homestay>>success("暂无房源", null);
         }
         List<Homestay> list = homestayService.findByLandlordId(landlord.getLandlordId());
         return Result.success(list);
     }
 
-    @GetMapping("/city/{cityCode}")
-    public Result<Page<Homestay>> listByCity(@PathVariable String cityCode,
+    @GetMapping("/city/{city}")
+    public Result<Page<Homestay>> listByCity(@PathVariable String city,
                                               @RequestParam(defaultValue = "1") int page,
                                               @RequestParam(defaultValue = "10") int size) {
-        Page<Homestay> list = homestayService.findByCity(cityCode, page, size);
+        Page<Homestay> list = homestayService.findByCity(city, page, size);
         return Result.success(list);
     }
 
     @PutMapping("/status/{id}")
-    public Result<Void> updateStatus(@PathVariable Long id, @RequestParam Integer status) {
+    public Result<Void> updateStatus(@PathVariable Integer id, @RequestParam Integer status) {
         homestayService.updateStatus(id, status);
-        return Result.success("状态更新成功", null);
+        return Result.<Void>success("状态更新成功", null);
     }
 
     @GetMapping("/search")
     public Result<Page<Homestay>> search(
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String cityCode,
+            @RequestParam(required = false) String city,
             @RequestParam(required = false) Integer minPrice,
             @RequestParam(required = false) Integer maxPrice,
             @RequestParam(required = false) Integer status,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size) {
-        Page<Homestay> list = homestayService.search(keyword, cityCode, minPrice, maxPrice, status, page, size);
+        Page<Homestay> list = homestayService.search(keyword, city, minPrice, maxPrice, status, page, size);
         return Result.success(list);
     }
 }

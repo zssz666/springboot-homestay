@@ -4,33 +4,25 @@ import com.example.housestayspringboot.entity.User;
 
 public interface UserService {
 
-    /**
-     * 根据手机号查询用户
-     */
     User findByPhone(String phone);
 
-    /**
-     * 注册用户
-     */
-    User register(String phone, String password, String nickname);
+    User register(String phone, String password, String nickname, Integer gender, String birthday);
 
-    /**
-     * 验证密码
-     */
     boolean verifyPassword(String rawPassword, String encodedPassword);
 
-    /**
-     * 根据ID查询用户
-     */
-    User findById(Long userId);
+    User findById(Integer userId);
 
-    /**
-     * 更新用户信息
-     */
     User update(User user);
 
-    /**
-     * 修改密码
-     */
-    void updatePassword(Long userId, String newPassword);
+    void updatePassword(Integer userId, String newPassword);
+
+    int getCertStatus(Integer userId);
+
+    User submitRealNameCert(Integer userId, String realName, String idCard);
+
+    int getStudentCertStatus(Integer userId);
+
+    User submitStudentCert(Integer userId, String studentCardUrl);
+
+    int calculateAge(Integer userId);
 }

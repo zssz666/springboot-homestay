@@ -4,15 +4,15 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import java.time.LocalDateTime;
 
 @Data
-@TableName("admin")
-public class Admin {
+@TableName("guest")
+public class Guest {
     @TableId(type = IdType.AUTO)
-    private Integer adminId;
-    private String adminName;
-    private String adminPassword;
-    private String adminAvatar;
-    private Integer adminStatus;
+    private Integer guestId;
+    private Integer userId;
+    private String guestName;
+    private String guestIdCard;
+    private String guestPhone;
+    private Integer isDefault;
 }

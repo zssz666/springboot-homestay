@@ -7,12 +7,11 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("admin")
-public class Admin {
+@TableName("favorite")
+public class Favorite {
     @TableId(type = IdType.AUTO)
-    private Integer adminId;
-    private String adminName;
-    private String adminPassword;
-    private String adminAvatar;
-    private Integer adminStatus;
+    private Integer favoriteId;
+    private Integer homestayId;
+    private Integer userId;
+    private LocalDateTime createTime;
 }

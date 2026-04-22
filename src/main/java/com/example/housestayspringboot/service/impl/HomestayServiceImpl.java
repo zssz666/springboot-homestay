@@ -17,45 +17,44 @@ public class HomestayServiceImpl implements HomestayService {
 
     @Override
     public Homestay create(Homestay homestay) {
-        homestay.setAuditStatus(0);
-        homestay.setStatus(0);
-        homestay.setCreatedAt(LocalDateTime.now());
-        homestay.setUpdatedAt(LocalDateTime.now());
+        homestay.setHomestayStatus(0);
+        homestay.setUdStatus(0);
+        homestay.setHomestayUptime(LocalDateTime.now());
         homestayMapper.insert(homestay);
         return homestay;
     }
 
     @Override
     public Homestay update(Homestay homestay) {
-        homestay.setUpdatedAt(LocalDateTime.now());
+        homestay.setHomestayUptime(LocalDateTime.now());
         homestayMapper.updateById(homestay);
         return homestay;
     }
 
     @Override
-    public void delete(Long homestayId) {
+    public void delete(Integer homestayId) {
         homestayMapper.deleteById(homestayId);
     }
 
     @Override
-    public Homestay findById(Long homestayId) {
+    public Homestay findById(Integer homestayId) {
         return homestayMapper.selectById(homestayId);
     }
 
     @Override
-    public List<Homestay> findByLandlordId(Long landlordId) {
+    public List<Homestay> findByLandlordId(Integer landlordId) {
         LambdaQueryWrapper<Homestay> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Homestay::getLandlordId, landlordId);
         return homestayMapper.selectList(wrapper);
     }
 
     @Override
-    public Page<Homestay> findByCity(String cityCode, int page, int size) {
+    public Page<Homestay> findByCity(String city, int page, int size) {
         Page<Homestay> pageParam = new Page<>(page, size);
         LambdaQueryWrapper<Homestay> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Homestay::getCityCode, cityCode)
-               .eq(Homestay::getStatus, 1)
-               .eq(Homestay::getAuditStatus, 1);
+        wrapper.eq(Homestay::getCity, city)
+               .eq(Homestay::getUdStatus, 1)
+               .eq(Homestay::getHomestayStatus, 1);
         return homestayMapper.selectPage(pageParam, wrapper);
     }
 
@@ -63,43 +62,42 @@ public class HomestayServiceImpl implements HomestayService {
     public Page<Homestay> findAll(int page, int size) {
         Page<Homestay> pageParam = new Page<>(page, size);
         LambdaQueryWrapper<Homestay> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Homestay::getStatus, 1)
-               .eq(Homestay::getAuditStatus, 1)
-               .orderByDesc(Homestay::getCreatedAt);
+        wrapper.eq(Homestay::getUdStatus, 1)
+               .eq(Homestay::getHomestayStatus, 1)
+               .orderByDesc(Homestay::getHomestayUptime);
         return homestayMapper.selectPage(pageParam, wrapper);
     }
 
     @Override
-    public void updateStatus(Long homestayId, Integer status) {
+    public void updateStatus(Integer homestayId, Integer status) {
         Homestay homestay = findById(homestayId);
         if (homestay != null) {
-            homestay.setStatus(status);
-            homestay.setUpdatedAt(LocalDateTime.now());
+            homestay.setUdStatus(status);
+            homestay.setHomestayUptime(LocalDateTime.now());
             homestayMapper.updateById(homestay);
         }
     }
 
     @Override
-    public void updateAuditStatus(Long homestayId, Integer auditStatus) {
+    public void updateAuditStatus(Integer homestayId, Integer auditStatus) {
         Homestay homestay = findById(homestayId);
         if (homestay != null) {
-            homestay.setAuditStatus(auditStatus);
-            homestay.setUpdatedAt(LocalDateTime.now());
+            homestay.setHomestayStatus(auditStatus);
+            homestay.setHomestayUptime(LocalDateTime.now());
             homestayMapper.updateById(homestay);
         }
     }
 
     @Override
-    public Page<Homestay> search(String keyword, String cityCode, Integer minPrice, Integer maxPrice, Integer status, int page, int size) {
+    public Page<Homestay> search(String keyword, String city, Integer minPrice, Integer maxPrice, Integer status, int page, int size) {
         Page<Homestay> pageParam = new Page<>(page, size);
         LambdaQueryWrapper<Homestay> wrapper = new LambdaQueryWrapper<>();
 
-        // 默认只显示已审核通过且上架的房源
         if (status == null) {
-            wrapper.eq(Homestay::getStatus, 1)
-                   .eq(Homestay::getAuditStatus, 1);
+            wrapper.eq(Homestay::getUdStatus, 1)
+                   .eq(Homestay::getHomestayStatus, 1);
         } else {
-            wrapper.eq(Homestay::getStatus, status);
+            wrapper.eq(Homestay::getUdStatus, status);
         }
 
         if (keyword != null && !keyword.isEmpty()) {
@@ -108,8 +106,8 @@ public class HomestayServiceImpl implements HomestayService {
                     .or().like(Homestay::getDescription, keyword));
         }
 
-        if (cityCode != null && !cityCode.isEmpty()) {
-            wrapper.eq(Homestay::getCityCode, cityCode);
+        if (city != null && !city.isEmpty()) {
+            wrapper.eq(Homestay::getCity, city);
         }
 
         if (minPrice != null) {
@@ -120,7 +118,7 @@ public class HomestayServiceImpl implements HomestayService {
             wrapper.le(Homestay::getPrice, maxPrice);
         }
 
-        wrapper.orderByDesc(Homestay::getCreatedAt);
+        wrapper.orderByDesc(Homestay::getHomestayUptime);
         return homestayMapper.selectPage(pageParam, wrapper);
     }
 }

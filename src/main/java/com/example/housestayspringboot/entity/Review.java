@@ -8,23 +8,19 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("t_review")
+@TableName("review")
 public class Review {
     @TableId(type = IdType.AUTO)
-    private Long reviewId;
-    private Long orderId;
-    private Long userId;
-    private Long homestayId;
-    private Long landlordId;
+    private Integer reviewId;
+    private Integer homestayId;
+    private Integer adminId;
+    private Integer userId;
+    private Integer orderId;
     private Integer rating;
     private String content;
     private String images;
     private String replyContent;
     private LocalDateTime replyTime;
-    private Integer auditStatus; // 0-待审 1-通过 2-驳回
-    private LocalDateTime createdAt;
-
-    // 非数据库字段
-    @TableField(exist = false)
-    private User user;
+    private Integer isshow;
+    private LocalDateTime reviewTime;
 }

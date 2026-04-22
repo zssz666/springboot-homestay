@@ -29,26 +29,26 @@ public class AuthController {
         String password = loginData.get("password");
 
         if (phone == null || phone.isEmpty()) {
-            return Result.error(400, "手机号不能为空");
+            return Result.<Map<String, Object>>error(400, "手机号不能为空");
         }
         if (password == null || password.isEmpty()) {
-            return Result.error(400, "密码不能为空");
+            return Result.<Map<String, Object>>error(400, "密码不能为空");
         }
 
         User user = userService.findByPhone(phone);
         if (user == null) {
-            return Result.error(401, "用户不存在");
+            return Result.<Map<String, Object>>error(401, "用户不存在");
         }
 
         if (!userService.verifyPassword(password, user.getPassword())) {
-            return Result.error(401, "密码错误");
+            return Result.<Map<String, Object>>error(401, "密码错误");
         }
 
-        if (user.getStatus() == 1) {
-            return Result.error(401, "账号已被禁用");
+        if (user.getUserStatus() != null && user.getUserStatus() == 1) {
+            return Result.<Map<String, Object>>error(401, "账号已被禁用");
         }
 
-        String token = jwtUtils.generateToken(user.getUserId(), user.getPhone(), user.getRole());
+        String token = jwtUtils.generateToken(user.getUserId(), user.getPhone(), "user");
 
         Map<String, Object> data = new HashMap<>();
         data.put("token", token);
@@ -64,25 +64,46 @@ public class AuthController {
     public Result<Map<String, Object>> register(@RequestBody Map<String, String> registerData) {
         String phone = registerData.get("phone");
         String password = registerData.get("password");
+        String code = registerData.get("code");
         String nickname = registerData.get("nickname");
+        String avatar = registerData.get("avatar");
 
         if (phone == null || phone.isEmpty()) {
-            return Result.error(400, "手机号不能为空");
+            return Result.<Map<String, Object>>error(400, "手机号不能为空");
         }
         if (password == null || password.isEmpty()) {
-            return Result.error(400, "密码不能为空");
+            return Result.<Map<String, Object>>error(400, "密码不能为空");
         }
+        if (code == null || code.isEmpty()) {
+            return Result.<Map<String, Object>>error(400, "请输入验证码");
+        }
+        // 验证码校验（模拟：仅支持 123456）
+        if (!"123456".equals(code)) {
+            return Result.<Map<String, Object>>error(400, "验证码错误");
+        }
+
         if (nickname == null || nickname.isEmpty()) {
             nickname = "用户" + phone.substring(7);
         }
 
         User existUser = userService.findByPhone(phone);
         if (existUser != null) {
-            return Result.error(400, "该手机号已注册");
+            return Result.<Map<String, Object>>error(400, "该手机号已注册");
         }
 
-        User user = userService.register(phone, password, nickname);
-        String token = jwtUtils.generateToken(user.getUserId(), user.getPhone(), user.getRole());
+        String genderStr = registerData.get("gender");
+        Integer gender = null;
+        if (genderStr != null && !genderStr.isEmpty()) {
+            try { gender = Integer.parseInt(genderStr); } catch (Exception ignored) {}
+        }
+        String birthday = registerData.get("birthday");
+
+        User user = userService.register(phone, password, nickname, gender, birthday);
+        if (avatar != null && !avatar.isEmpty()) {
+            user.setAvatar(avatar);
+            userService.update(user);
+        }
+        String token = jwtUtils.generateToken(user.getUserId(), user.getPhone(), "user");
 
         Map<String, Object> data = new HashMap<>();
         data.put("token", token);
@@ -97,22 +118,21 @@ public class AuthController {
     @GetMapping("/me")
     public Result<User> getCurrentUser(@RequestHeader("Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return Result.error(401, "未登录");
+            return Result.<User>error(401, "未登录");
         }
 
         String token = authHeader.substring(7);
         if (!jwtUtils.validateToken(token)) {
-            return Result.error(401, "Token无效或已过期");
+            return Result.<User>error(401, "Token无效或已过期");
         }
 
-        Long userId = jwtUtils.getUserId(token);
+        Integer userId = jwtUtils.getUserId(token);
         User user = userService.findById(userId);
 
         if (user == null) {
-            return Result.error(404, "用户不存在");
+            return Result.<User>error(404, "用户不存在");
         }
 
-        // 不返回密码
         user.setPassword(null);
         return Result.success(user);
     }
@@ -122,7 +142,7 @@ public class AuthController {
      */
     @PostMapping("/logout")
     public Result<Void> logout() {
-        return Result.success("登出成功", null);
+        return Result.<Void>success("登出成功", null);
     }
 
     /**
@@ -132,9 +152,8 @@ public class AuthController {
     public Result<Map<String, String>> sendVerifyCode(@RequestBody Map<String, String> request) {
         String phone = request.get("phone");
         if (phone == null || phone.isEmpty()) {
-            return Result.error(400, "手机号不能为空");
+            return Result.<Map<String, String>>error(400, "手机号不能为空");
         }
-        // 模拟发送验证码，实际项目中需要集成短信服务
         Map<String, String> data = new HashMap<>();
         data.put("code", "123456");
         return Result.success("验证码已发送", data);
@@ -149,27 +168,26 @@ public class AuthController {
         String code = loginData.get("code");
 
         if (phone == null || phone.isEmpty()) {
-            return Result.error(400, "手机号不能为空");
+            return Result.<Map<String, Object>>error(400, "手机号不能为空");
         }
         if (code == null || code.isEmpty()) {
-            return Result.error(400, "验证码不能为空");
+            return Result.<Map<String, Object>>error(400, "验证码不能为空");
         }
 
-        // 验证码校验（模拟：123456）
         if (!"123456".equals(code)) {
-            return Result.error(401, "验证码错误");
+            return Result.<Map<String, Object>>error(401, "验证码错误");
         }
 
         User user = userService.findByPhone(phone);
         if (user == null) {
-            return Result.error(401, "用户不存在，请先注册");
+            return Result.<Map<String, Object>>error(404, "用户不存在，请先注册");
         }
 
-        if (user.getStatus() == 1) {
-            return Result.error(401, "账号已被禁用");
+        if (user.getUserStatus() != null && user.getUserStatus() == 1) {
+            return Result.<Map<String, Object>>error(401, "账号已被禁用");
         }
 
-        String token = jwtUtils.generateToken(user.getUserId(), user.getPhone(), user.getRole());
+        String token = jwtUtils.generateToken(user.getUserId(), user.getPhone(), "user");
 
         Map<String, Object> data = new HashMap<>();
         data.put("token", token);

@@ -10,26 +10,27 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("t_order")
+@TableName("orders")
 public class Order {
     @TableId(type = IdType.AUTO)
-    private Long orderId;
+    private Integer orderId;
+    private Integer homestayId;
+    private Integer userId;
+    private Integer landlordId;
+    private Integer reviewId;
     private String orderNo;
-    private Long userId;
-    private Long homestayId;
-    private Long landlordId;
-    private LocalDate checkInDate;
-    private LocalDate checkOutDate;
-    private BigDecimal totalAmount;
+    private LocalDate inDate;
+    private LocalDate outDate;
+    private String contactName;
+    private String contactPhone;
     private BigDecimal depositAmount;
-    private Integer status; // 0-待支付 1-待确认 2-待入住 3-入住中 4-已完成 5-已取消
-    private Integer payStatus;
+    private BigDecimal paidAmount;
+    private BigDecimal totalAmount;
+    private String discountAmount;
+    private Integer orderStatus;
+    private Integer checkIncode;
     private String cancelReason;
-    private LocalDateTime createdAt;
-    private LocalDateTime payTime;
-    private LocalDateTime confirmTime;
-
-    // 非数据库字段
-    @TableField(exist = false)
-    private Homestay homestayInfo;
+    private Integer isReviewed;
+    private LocalDateTime orderUptime;
+    private LocalDateTime createTime;
 }

@@ -7,12 +7,12 @@ import java.util.List;
 public interface HomestayService {
     Homestay create(Homestay homestay);
     Homestay update(Homestay homestay);
-    void delete(Long homestayId);
-    Homestay findById(Long homestayId);
-    List<Homestay> findByLandlordId(Long landlordId);
-    Page<Homestay> findByCity(String cityCode, int page, int size);
+    void delete(Integer homestayId);
+    Homestay findById(Integer homestayId);
+    List<Homestay> findByLandlordId(Integer landlordId);
+    Page<Homestay> findByCity(String city, int page, int size);
     Page<Homestay> findAll(int page, int size);
-    Page<Homestay> search(String keyword, String cityCode, Integer minPrice, Integer maxPrice, Integer status, int page, int size);
-    void updateStatus(Long homestayId, Integer status);
-    void updateAuditStatus(Long homestayId, Integer auditStatus);
+    Page<Homestay> search(String keyword, String city, Integer minPrice, Integer maxPrice, Integer status, int page, int size);
+    void updateStatus(Integer homestayId, Integer status);
+    void updateAuditStatus(Integer homestayId, Integer auditStatus);
 }
