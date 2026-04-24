@@ -21,7 +21,7 @@ public class UserController {
     private JwtUtils jwtUtils;
 
     @GetMapping("/info")
-    public Result<User> getUserInfo(@RequestHeader("Authorization") String authHeader) {
+    public Result<User> getUserInfo(@RequestHeader(value = "Authorization", required = false) String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return Result.<User>error(401, "未登录");
         }
@@ -43,7 +43,7 @@ public class UserController {
     }
 
     @PutMapping("/info")
-    public Result<User> updateUserInfo(@RequestHeader("Authorization") String authHeader,
+    public Result<User> updateUserInfo(@RequestHeader(value = "Authorization", required = false) String authHeader,
                                        @RequestBody Map<String, String> updateData) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return Result.<User>error(401, "未登录");
@@ -100,7 +100,7 @@ public class UserController {
     }
 
     @PutMapping("/password")
-    public Result<Void> changePassword(@RequestHeader("Authorization") String authHeader,
+    public Result<Void> changePassword(@RequestHeader(value = "Authorization", required = false) String authHeader,
                                         @RequestBody Map<String, String> passwordData) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return Result.<Void>error(401, "未登录");
@@ -140,7 +140,7 @@ public class UserController {
     }
 
     @PostMapping("/phone/code")
-    public Result<Map<String, String>> sendPhoneChangeCode(@RequestHeader("Authorization") String authHeader,
+    public Result<Map<String, String>> sendPhoneChangeCode(@RequestHeader(value = "Authorization", required = false) String authHeader,
                                                             @RequestBody Map<String, String> request) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return Result.<Map<String, String>>error(401, "未登录");
@@ -168,7 +168,7 @@ public class UserController {
 
     // 实名认证状态
     @GetMapping("/cert/status")
-    public Result<Map<String, Object>> getCertStatus(@RequestHeader("Authorization") String authHeader) {
+    public Result<Map<String, Object>> getCertStatus(@RequestHeader(value = "Authorization", required = false) String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return Result.<Map<String, Object>>error(401, "未登录");
         }
@@ -185,7 +185,7 @@ public class UserController {
 
     // 提交实名认证
     @PostMapping("/cert")
-    public Result<User> submitRealNameCert(@RequestHeader("Authorization") String authHeader,
+    public Result<User> submitRealNameCert(@RequestHeader(value = "Authorization", required = false) String authHeader,
                                            @RequestBody Map<String, String> certData) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return Result.<User>error(401, "未登录");
@@ -218,7 +218,7 @@ public class UserController {
 
     // 学生认证状态（含年龄信息）
     @GetMapping("/student-cert/status")
-    public Result<Map<String, Object>> getStudentCertStatus(@RequestHeader("Authorization") String authHeader) {
+    public Result<Map<String, Object>> getStudentCertStatus(@RequestHeader(value = "Authorization", required = false) String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return Result.<Map<String, Object>>error(401, "未登录");
         }
@@ -243,7 +243,7 @@ public class UserController {
 
     // 提交学生认证
     @PostMapping("/student-cert")
-    public Result<User> submitStudentCert(@RequestHeader("Authorization") String authHeader,
+    public Result<User> submitStudentCert(@RequestHeader(value = "Authorization", required = false) String authHeader,
                                           @RequestBody Map<String, String> certData) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return Result.<User>error(401, "未登录");

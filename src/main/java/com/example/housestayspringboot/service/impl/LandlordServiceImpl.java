@@ -37,6 +37,18 @@ public class LandlordServiceImpl implements LandlordService {
     }
 
     @Override
+    public Landlord login(String phone, String password) {
+        Landlord landlord = findByPhone(phone);
+        if (landlord == null) {
+            return null;
+        }
+        if (!passwordEncoder.matches(password, landlord.getPassword())) {
+            return null;
+        }
+        return landlord;
+    }
+
+    @Override
     public Landlord register(String phone, String password, String landlordName, String realName, String idCard,
                              String idCardFront, String idCardBack,
                              String landlordAvatar, String landlordIntroduce,

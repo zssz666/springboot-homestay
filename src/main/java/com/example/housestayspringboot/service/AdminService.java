@@ -5,4 +5,5 @@ import com.example.housestayspringboot.entity.Admin;
 public interface AdminService {
     Admin login(String username, String password);
     Admin findById(Integer adminId);
+    Admin findByUsername(String username);
 }

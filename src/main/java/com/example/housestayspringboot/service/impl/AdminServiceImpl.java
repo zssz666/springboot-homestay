@@ -32,4 +32,11 @@ public class AdminServiceImpl implements AdminService {
     public Admin findById(Integer adminId) {
         return adminMapper.selectById(adminId);
     }
+
+    @Override
+    public Admin findByUsername(String username) {
+        LambdaQueryWrapper<Admin> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Admin::getAdminName, username);
+        return adminMapper.selectOne(wrapper);
+    }
 }

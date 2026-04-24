@@ -116,7 +116,7 @@ public class AuthController {
      * 获取当前用户信息
      */
     @GetMapping("/me")
-    public Result<User> getCurrentUser(@RequestHeader("Authorization") String authHeader) {
+    public Result<User> getCurrentUser(@RequestHeader(value = "Authorization", required = false) String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return Result.<User>error(401, "未登录");
         }

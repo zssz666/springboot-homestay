@@ -36,18 +36,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
 
             if (jwtUtils.validateToken(token)) {
-                Integer userId = jwtUtils.getUserId(token);
-                String role = jwtUtils.getRole(token);
+                // 判断 token 类型：优先检查 adminId，再检查 landlordId，最后才是 userId
+                Integer adminId = jwtUtils.getAdminIdIfPresent(token);
+                Integer landlordId = jwtUtils.getLandlordIdIfPresent(token);
+                Integer userId = null;
+                String role = null;
 
-                User user = userService.findById(userId);
-                if (user != null) {
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(
-                                    user,
-                                    null,
-                                    Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role))
-                            );
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                if (adminId != null) {
+                    userId = adminId;
+                    role = "admin";
+                } else if (landlordId != null) {
+                    userId = landlordId;
+                    role = "landlord";
+                } else {
+                    userId = jwtUtils.getUserId(token);
+                    role = jwtUtils.getRole(token);
+                }
+
+                if (userId != null) {
+                    User user = userService.findById(userId);
+                    if (user != null) {
+                        UsernamePasswordAuthenticationToken authentication =
+                                new UsernamePasswordAuthenticationToken(
+                                        user,
+                                        null,
+                                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role))
+                                );
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    }
                 }
             }
         }

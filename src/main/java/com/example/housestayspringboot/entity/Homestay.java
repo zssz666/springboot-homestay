@@ -20,6 +20,8 @@ public class Homestay {
     private Integer houseType;
     private String city;
     private String address;
+    /** 经纬度，格式 "lng,lat"，如 "104.06,30.65" */
+    private String location;
     private BigDecimal price;
     private Integer area;
     private Integer roomCount;

@@ -30,7 +30,8 @@ public class OrderController {
     private JwtUtils jwtUtils;
 
     @PostMapping("/create")
-    public Result<Order> create(@RequestBody Map<String, Object> data, @RequestHeader("Authorization") String authHeader) {
+    public Result<Order> create(@RequestBody Map<String, Object> data, @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader == null) return Result.<Order>error(401, "未登录");
         String token = authHeader.substring(7);
         Integer userId = jwtUtils.getUserId(token);
 
@@ -73,7 +74,8 @@ public class OrderController {
     @GetMapping("/my-list")
     public Result<Page<Order>> myList(@RequestParam(defaultValue = "1") int page,
                                        @RequestParam(defaultValue = "10") int size,
-                                       @RequestHeader("Authorization") String authHeader) {
+                                       @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader == null) return Result.<Page<Order>>error(401, "未登录");
         String token = authHeader.substring(7);
         Integer userId = jwtUtils.getUserId(token);
         Page<Order> list = orderService.findByUserId(userId, page, size);
@@ -83,7 +85,8 @@ public class OrderController {
     @GetMapping("/landlord-list")
     public Result<Page<Order>> landlordList(@RequestParam(defaultValue = "1") int page,
                                             @RequestParam(defaultValue = "10") int size,
-                                            @RequestHeader("Authorization") String authHeader) {
+                                            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader == null) return Result.<Page<Order>>error(401, "未登录");
         String token = authHeader.substring(7);
         Integer userId = jwtUtils.getUserId(token);
 

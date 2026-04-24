@@ -98,4 +98,52 @@ public class JwtUtils {
         }
         return Integer.valueOf(adminId.toString());
     }
+
+    public String generateLandlordToken(Integer landlordId, String phone) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("landlordId", landlordId);
+        claims.put("phone", phone);
+        return createToken(claims, landlordId.toString());
+    }
+
+    public Integer getLandlordId(String token) {
+        Claims claims = parseToken(token);
+        Object landlordId = claims.get("landlordId");
+        if (landlordId instanceof Integer) {
+            return (Integer) landlordId;
+        } else if (landlordId instanceof Long) {
+            return ((Long) landlordId).intValue();
+        } else if (landlordId instanceof Number) {
+            return ((Number) landlordId).intValue();
+        }
+        return Integer.valueOf(landlordId.toString());
+    }
+
+    public Integer getAdminIdIfPresent(String token) {
+        try {
+            Claims claims = parseToken(token);
+            Object adminId = claims.get("adminId");
+            if (adminId == null) return null;
+            if (adminId instanceof Integer) return (Integer) adminId;
+            if (adminId instanceof Long) return ((Long) adminId).intValue();
+            if (adminId instanceof Number) return ((Number) adminId).intValue();
+            return Integer.valueOf(adminId.toString());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public Integer getLandlordIdIfPresent(String token) {
+        try {
+            Claims claims = parseToken(token);
+            Object landlordId = claims.get("landlordId");
+            if (landlordId == null) return null;
+            if (landlordId instanceof Integer) return (Integer) landlordId;
+            if (landlordId instanceof Long) return ((Long) landlordId).intValue();
+            if (landlordId instanceof Number) return ((Number) landlordId).intValue();
+            return Integer.valueOf(landlordId.toString());
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

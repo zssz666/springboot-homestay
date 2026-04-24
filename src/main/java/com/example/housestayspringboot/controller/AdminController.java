@@ -2,9 +2,11 @@ package com.example.housestayspringboot.controller;
 
 import com.example.housestayspringboot.common.Result;
 import com.example.housestayspringboot.entity.Admin;
+import com.example.housestayspringboot.mapper.AdminMapper;
 import com.example.housestayspringboot.service.AdminService;
 import com.example.housestayspringboot.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +18,13 @@ public class AdminController {
     private AdminService adminService;
 
     @Autowired
+    private AdminMapper adminMapper;
+
+    @Autowired
     private JwtUtils jwtUtils;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
     public Result<Map<String, Object>> login(@RequestBody Map<String, String> data) {
@@ -25,7 +33,7 @@ public class AdminController {
 
         Admin admin = adminService.login(username, password);
         if (admin == null) {
-            return Result.<Map<String, Object>>error(401, "用户名或密码错误");
+            return Result.error(401, "用户名或密码错误");
         }
 
         String token = jwtUtils.generateAdminToken(admin.getAdminId(), admin.getAdminName());
@@ -40,7 +48,7 @@ public class AdminController {
     }
 
     @GetMapping("/info")
-    public Result<Admin> info(@RequestHeader("Authorization") String authHeader) {
+    public Result<Admin> info(@RequestHeader(value = "Authorization", required = false) String authHeader) {
         String token = authHeader.substring(7);
         Integer adminId = jwtUtils.getAdminId(token);
 
